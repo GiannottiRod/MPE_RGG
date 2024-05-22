@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/MPE_RGG.iml" filepath="$PROJECT_DIR$/.idea/MPE_RGG.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../../../GitHub/RGLib/.idea/RGLib.iml" filepath="$PROJECT_DIR$/../../../GitHub/RGLib/.idea/RGLib.iml" />
       <module fileurl="file://$PROJECT_DIR$/../../../Receitas/.idea/Receitas.iml" filepath="$PROJECT_DIR$/../../../Receitas/.idea/Receitas.iml" />
     </modules>
   </component>
