@@ -53,10 +53,29 @@ aluguel %>% summary
 
 1.	Critique a escolha desta base de dados:
   a.	liste o problema de negócio e o que esperamos dos dados usados no problema
+  
+O problema de negócio nasce da dificuldade de precificar objetivamente o valor de aluguel de um imovel
+partindo somente de caracteristicas objetivas desse imovel. Temos uma quantidade de variaveis que nos parecem
+suficientes, mas que com certeza são somente capazes de chegar tão longe na analise deste problema. Nao parece
+que temos valores faltantes e é necessario estudar mais a fundo, mas parece que todas as variaveis possuem
+alguns outliers bastante expressivos que pode ser que necessitem de tratamento.
+  
   b.	liste hipóteses razoáveis para que esta base seja adequada na modelagem do problema
-  c.	indique outras variáveis que possam ser relevantes mas estão faltando na base.
-```{r P1 QA1a_1}
 
+Esperamos encontrar betas positivos para todas as variaveis, mas tambem esperamos encontrar alta correlacao
+entre muitas delas, de forma que o modelo linear irrestrito pode apresentar betas negativos que podemos ter o interesse
+de tratar caso exista algum interesse de analise na sensibilidade marginal condicional dos preços às variaveis codificada nos betas.
+  
+  c.	indique outras variáveis que possam ser relevantes mas estão faltando na base.
+  
+Nos preocupa de imediato a falta de qualquer informação dos entornos do imovel, fator costumeiramente
+muito importante para a precificação de imoveis e de seu aluguel. Poderiamos ter, por exemplo, informações censitarias
+como renda per capita média, n médio de televisores, computadores etc na unidade censitaria que o imovel se localiza.
+Alem disso também seria interessante ter variaveis que falem sobre o estado de conservacao do imovel, mas entedemos 
+que essas variaveis podem ser dificeis de quantificar.
+
+```{r P1 QA1a_1}
+aluguel %>% ggplot(aes(x=area_util, y=preco_total))+geom_point()
 ```
 
   
