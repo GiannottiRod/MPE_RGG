@@ -1,0 +1,91 @@
+---
+title: "Tutorial 3 - Inteligencia Computacional - Regressão Linear e Regularização"
+author: "Rodrigo Giannotti e Caio Stabel"
+date: '2024-06-01'
+output: html_document
+---
+
+```{r setup, include=FALSE}
+library(dplyr)
+library(readr)
+library(ggplot2)
+library(magrittr)
+```
+
+## Parte 1: O modelo inicial
+
+O objetivo da primeira parte do tutorial é:
+
+
+1.	avaliar criticamente a base de dados que usamos em nossos problemas de previsão;
+2.	separar amostras em grupos de treino e teste, avaliando sua compatibilidade;
+3.	implementar um modelo de regressão linear em R;
+4.	avaliar a performance de modelos de regressão, observando o efeito de adicionar novas variáveis e transformações;
+5.	criticar performance do modelo estimado, tento como referência um modelo base.
+
+
+```{r data injestion}
+aluguel <- read_csv("./zap_imoveis_20210701_SUBSET.csv", show_col_types = FALSE)
+```
+
+```{r column specification check}
+aluguel %>% spec
+```
+
+```{r data header check}
+aluguel %>% head
+```
+
+Ajustando a variavel discreta (booleana) mobiliado para ser um fator no R
+
+```{r mobiliado variable adjustment}
+aluguel %<>% mutate(mobiliado = factor(mobiliado,c(0,1),c('NO','YES')))
+aluguel %>% head(5)
+```
+
+
+```{r variable summary}
+aluguel %>% summary 
+``` 
+
+
+### QA Parte 1
+
+1.	Critique a escolha desta base de dados:
+  a.	liste o problema de negócio e o que esperamos dos dados usados no problema
+  b.	liste hipóteses razoáveis para que esta base seja adequada na modelagem do problema
+  c.	indique outras variáveis que possam ser relevantes mas estão faltando na base.
+```{r P1 QA1a_1}
+
+```
+
+  
+2.	Separe os dados em uma base de treino e outra de teste. Avalie se as estatísticas descritivas das duas amostras estão compatíveis entre si.
+```{r P1 QA2_1}
+
+```
+
+
+3.	Estime um primeiro modelo linear levando em consideração apenas o número de quartos e metragem do imóvel. Este será nosso modelo base, utilizado atualmente pela empresa.
+```{r P1 QA3_1}
+
+```
+
+4.	Proponha um novo modelo para precificação de aluguel. Lembre-se que podemos fazer transformações e combinações de variáveis.
+```{r P1 QA4_1}
+
+```
+
+5.	Avalie o ajuste do modelo proposto das formas que discutimos em aula.
+```{r P1 QA5_1}
+
+```
+
+6.	Compare quantitativamente a performance dos dois modelos, indicando qual deles seu grupo considera mais adequado.
+```{r P1 QA6_1}
+
+```
+
+Dica: avaliando os dados observamos que o aluguel total possui uma cauda à direita bastante pesada, com a grande maioria dos valores concentrados próximos a moda. Pensem em possíveis transformações e remoção de dados que podem ajudar no problema e como isso altera nossa população.
+
+
