@@ -81,30 +81,158 @@ aluguel %>% ggplot(aes(x=area_util, y=preco_total))+geom_point()
   
 2.	Separe os dados em uma base de treino e outra de teste. Avalie se as estatísticas descritivas das duas amostras estão compatíveis entre si.
 ```{r P1 QA2_1}
+set.seed(420)
+n <- nrow(aluguel)
+ind <- sample(1:n,floor(0.7*n))
+treino <- aluguel[ind,]
+teste <- aluguel[-ind,]
 
+treino %>% summary
+teste %>% summary
 ```
+
+!! Falar algo sobre os outliers serem a grande diferença entre as 2 bases 
 
 
 3.	Estime um primeiro modelo linear levando em consideração apenas o número de quartos e metragem do imóvel. Este será nosso modelo base, utilizado atualmente pela empresa.
 ```{r P1 QA3_1}
-
+modelin <- lm(preco_total ~ quartos + area_util, treino)
+modelin
 ```
+
+!! plotar residuos e algum summary?
 
 4.	Proponha um novo modelo para precificação de aluguel. Lembre-se que podemos fazer transformações e combinações de variáveis.
 ```{r P1 QA4_1}
-
+# montar um modelo que usa mais variaveis e preve o preco do metro quadrado se pa
 ```
 
 5.	Avalie o ajuste do modelo proposto das formas que discutimos em aula.
 ```{r P1 QA5_1}
-
+# mds nao achei isso desespelo
 ```
 
 6.	Compare quantitativamente a performance dos dois modelos, indicando qual deles seu grupo considera mais adequado.
 ```{r P1 QA6_1}
-
+# brilha caiao
 ```
 
 Dica: avaliando os dados observamos que o aluguel total possui uma cauda à direita bastante pesada, com a grande maioria dos valores concentrados próximos a moda. Pensem em possíveis transformações e remoção de dados que podem ajudar no problema e como isso altera nossa população.
 
+
+
+## Parte 2: Mais variáveis e mais modelos
+
+O objetivo da segunda parte do tutorial é:
+
+
+1.	Avaliar erros de treinamento, validação e no conjunto de teste
+2.	Implementar regularização e seleção de variáveis em modelos lineares
+3.	Escolher hiperparâmetro usando validação cruzada
+
+```{r}
+aluguel <- read_csv("./zap_add.csv")
+#aluguel %>% spec
+
+aluguel %<>% mutate(mobiliado = factor(mobiliado,c(0,1),c('NO','YES')))
+aluguel %>% head(5)
+```
+
+
+```{r}
+aluguel %>% summary
+```
+
+Restringindo domínio de aplicação
+
+```{r}
+aluguel.n <-aluguel %>%
+  mutate( preco_m2 = preco_total/area_util) %>%
+  filter( quartos <= 6,
+          area_util >= 20,
+          area_util <= 500,
+          preco_m2 < quantile(preco_m2,.99),
+          vagas <= 10,
+          suites <= banheiros) %>%
+  select(-c('...1',preco_m2))
+
+nrow(aluguel.n)/nrow(aluguel)
+summary(aluguel.n[,1:7])
+```
+
+```{r}
+aluguel.n %>% ggplot(aes(x=area_util, y=preco_total))+geom_point()
+```
+
+```{r}
+aluguel.n %<>%
+  mutate(
+    logarea_util = log(area_util),
+    logpreco_total = log(preco_total)) %>%
+  select(-c(preco_total,area_util))
+colnames(aluguel.n)
+```
+
+```{r}
+aluguel.n %>% ggplot(aes(x=logarea_util, y=logpreco_total))+geom_point()
+```
+
+
+10-fold crossvalidation
+```{r}
+library(caret)
+# https://topepo.github.io/caret/model-training-and-tuning.html#the-traincontrol-function
+train_ctrl <- trainControl(
+  method = "cv", # "loocv", "repeated cv", ..
+  number = 10
+)
+```
+
+train test split
+```{r}
+set.seed(420)
+n <- nrow(aluguel.n)
+ind <- sample(1:n,floor(0.7*n))
+treino <- aluguel.n[ind,]
+teste <- aluguel.n[-ind,]
+```
+
+
+```{r}
+# a escolha de grid pode ser iterativa no sentido de ajustar o range de busca
+grid <- expand.grid(.alpha=1,.lambda=exp(seq(-6, -3, by=0.05)))
+```
+
+
+```{r}
+# using caret to perform crossvalidation in LASSO
+set.seed(420)
+mod1 <- train( logpreco_total ~ .,
+               data = treino,
+               method =  "glmnet",
+               trControl = train_ctrl,
+               metric = "RMSE", # metrica que desejo minimizar
+               preProc = c("center","scale"),
+               tuneGrid = grid,
+               family = "gaussian")
+plot(mod1)
+```
+
+
+```{r}
+# variaveis selecionadas
+coef(mod1$finalModel,mod1$bestTune$lambda)
+```
+
+
+```{r}
+# previsao de valores fora da amostra e avaliação do erro
+yhat <- predict(mod1, newdata = teste)
+```
+
+
+
+```{r}
+#falta plotar os residuos para avaliar sua performance y vx yhat, regressão, etc.
+```
 
